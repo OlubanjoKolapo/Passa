@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Payments · Passa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+.filters {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 32px; border-bottom: 1px solid var(--line-soft);
+  background: #FCFCFD; position: sticky; top: 0; z-index: 2;
+}
+.filters select {
+  font: 500 11px var(--mono); color: var(--gray-700);
+  background: #fff; border: 1px solid #D1D5DB; border-radius: 6px;
+  padding: 5px 8px; cursor: pointer;
+}
+.filters .date-btn {
+  font: 500 11px var(--mono); color: var(--gray-700);
+  background: #fff; border: 1px solid #D1D5DB; border-radius: 6px;
+  padding: 5px 10px; cursor: pointer; font-variant-numeric: tabular-nums;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.filters .date-btn:hover { background: var(--bg-soft); }
+.filters input[type="search"] {
+  margin-left: auto; width: 260px;
+  font: 400 12px var(--sans); color: var(--ink);
+  background: #fff; border: 1px solid #D1D5DB; border-radius: 6px;
+  padding: 5px 10px; outline: none;
+}
+.filters input[type="search"]:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+.cols, .row {
+  display: grid;
+  grid-template-columns: 126px 112px minmax(0,1fr) 140px 66px 90px 158px;
+  gap: 12px; padding: 14px 32px;
+}
+.cols {
+  padding: 10px 32px; border-bottom: 1px solid var(--line);
+  font: 600 9.5px var(--sans); text-transform: uppercase;
+  letter-spacing: .08em; color: var(--gray-400);
+}
+.row { align-items: center; border-bottom: 1px solid var(--line-soft); cursor: pointer; }
+.row:hover { background: #FAFAFB; }
+.row .c-time { font: 400 11px var(--mono); color: var(--gray-400); font-variant-numeric: tabular-nums; }
+.row .c-user { font: 500 11.5px var(--mono); color: var(--gray-600); }
+.row .c-reason { font: 400 12.5px var(--sans); color: var(--gray-700); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .c-merchant { font: 500 12.5px var(--sans); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .rail, .row .pill { justify-self: start; }
+.row .c-amt { font: 500 12.5px var(--mono); color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; }
+.empty { padding: 48px; text-align: center; font: 400 13px var(--sans); color: var(--gray-400); }
+.pager {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 32px; margin-top: auto; border-top: 1px solid var(--line-soft);
+}
+.pager .info { font: 400 11px var(--mono); color: var(--gray-400); }
+.pager .btns { margin-left: auto; display: flex; gap: 6px; }
+.pager button { 
+  font: 500 11px var(--mono); border-radius: 6px; padding: 4px 10px; background: #fff; 
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.pager .prev { color: var(--gray-400); border: 1px solid var(--line); }
+.pager .next { color: var(--gray-700); border: 1px solid #D1D5DB; cursor: pointer; }
+.pager .next:hover { background: var(--bg-soft); }
+</style>
+</head>
+<body data-nav="payments">
+<div class="app">
+<div id="sidebar"></div>
+<main class="main">
+  <div class="topbar">
+    <span class="topbar-title">Payments</span>
+    <span class="topbar-sub"><span id="row-count">12</span> of 1,284</span>
+    <button class="btn" style="margin-left:auto"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>Export</button>
+  </div>
+  <div class="filters">
+    <div class="seg" id="status-tabs"></div>
+    <select id="rail-filter">
+      <option value="all">rail: all</option>
+      <option value="PIX">PIX</option>
+      <option value="UPI">UPI</option>
+      <option value="GCASH">GCASH</option>
+      <option value="CARD">CARD</option>
+    </select>
+    <button class="date-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>Jul 11 → Jul 18</button>
+    <input type="search" id="q" placeholder="Search user, merchant, reason…">
+  </div>
+  <div class="cols">
+    <span>Time (UTC)</span><span>User</span><span>Reason</span><span>Merchant</span>
+    <span>Rail</span><span style="text-align:right">Amount</span><span>Status</span>
+  </div>
+  <div id="rows"></div>
+  <div class="empty" id="empty" hidden>No payments match these filters.</div>
+  <div class="pager">
+    <span class="info">page 1 of 92</span>
+    <div class="btns">
+      <button class="prev" disabled><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>prev</button>
+      <button class="next">next<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button>
+    </div>
+  </div>
+</main>
+</div>
+<script src="app.js"></script>
+<script>
+const STATUSES = ['all', 'completed', 'pending_approval', 'awaiting_rail', 'declined', 'failed'];
+const state = { status: 'all', rail: 'all', q: '' };
+
+function renderTabs() {
+  const el = document.getElementById('status-tabs');
+  el.innerHTML = STATUSES.map(s =>
+    `<button data-status="${s}" class="${state.status === s ? 'on' : ''}">${s}</button>`
+  ).join('');
+  el.querySelectorAll('button').forEach(b =>
+    b.addEventListener('click', () => { state.status = b.dataset.status; renderTabs(); renderRows(); })
+  );
+}
+
+function renderRows() {
+  const q = state.q.trim().toLowerCase();
+  const rows = PASSA_PAYMENTS.filter(p =>
+    (state.status === 'all' || p.st === state.status) &&
+    (state.rail === 'all' || p.rail === state.rail) &&
+    (!q || (p.user + ' ' + p.reason + ' ' + p.merchant).toLowerCase().includes(q))
+  );
+  document.getElementById('row-count').textContent = rows.length;
+  document.getElementById('empty').hidden = rows.length > 0;
+  document.getElementById('rows').innerHTML = rows.map(p => `
+    <a class="row" href="payment.html?id=${p.id}">
+      <span class="c-time">Jul 18 · ${p.time}</span>
+      <span class="c-user">${p.user}</span>
+      <span class="c-reason">${p.reason}</span>
+      <span class="c-merchant">${p.merchant}</span>
+      <span class="rail">${p.rail}</span>
+      <span class="c-amt">${p.amt}</span>
+      ${pillHtml(p.st)}
+    </a>`).join('');
+}
+
+document.getElementById('rail-filter').addEventListener('change', (e) => { state.rail = e.target.value; renderRows(); });
+document.getElementById('q').addEventListener('input', (e) => { state.q = e.target.value; renderRows(); });
+renderTabs();
+renderRows();
+</script>
+</body>
+</html>

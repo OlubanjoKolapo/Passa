@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>State system · Passa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+body { background: #EDEEF1; }
+.wrap { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 16px; gap: 14px; }
+.back-link { font: 500 12px var(--sans); color: var(--gray-500); }
+.back-link:hover { color: var(--ink); }
+.card {
+  width: 420px; max-width: 100%; background: #fff;
+  border: 1px solid rgba(0,0,0,.08); border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  padding: 18px 20px;
+}
+.sec-title {
+  font: 600 11px var(--sans); text-transform: uppercase; letter-spacing: .06em;
+  color: var(--gray-500); margin-bottom: 12px;
+}
+.sec-title.rule { margin: 18px 0 10px; border-top: 1px solid var(--line-soft); padding-top: 14px; }
+.state-list { display: flex; flex-direction: column; gap: 10px; }
+.state-row { display: flex; align-items: center; gap: 12px; }
+.state-row .pill { flex: none; padding: 3px 10px; font-size: 11px; }
+.state-desc { font: 400 11.5px var(--sans); color: var(--gray-500); }
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back-link" href="index.html">← Back to dashboard</a>
+<div class="card">
+  <div class="sec-title">Payment states</div>
+  <div class="state-list">
+    <div class="state-row"><span class="pill completed"><span class="dot"></span>completed</span><span class="state-desc">Money moved and reconciled.</span></div>
+    <div class="state-row"><span class="pill pending_approval"><span class="dot"></span>pending_approval</span><span class="state-desc">Waiting on a human — the only amber on screen.</span></div>
+    <div class="state-row"><span class="pill awaiting_rail"><span class="dot"></span>awaiting_rail</span><span class="state-desc">Allowed, executing on the rail.</span></div>
+    <div class="state-row"><span class="pill declined"><span class="dot"></span>declined</span><span class="state-desc">Policy said no. Nothing moved.</span></div>
+    <div class="state-row"><span class="pill failed"><span class="dot"></span>failed</span><span class="state-desc">Rail error — eligible for fallback.</span></div>
+  </div>
+  <div class="sec-title rule">Rail badges</div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <span class="rail">PIX</span>
+    <span class="rail">UPI</span>
+    <span class="rail">GCASH</span>
+    <span class="rail">CARD</span>
+    <span class="state-desc" style="margin-left:4px">always mono, always outlined</span>
+  </div>
+  <div class="sec-title rule">Door motif</div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <svg width="28" height="28" viewBox="0 0 22 22"><rect width="22" height="22" rx="5" fill="#2563EB"></rect><path fill="#FFFFFF" fill-rule="evenodd" d="M6.2 4.5h6a5 5 0 0 1 5 5 5 5 0 0 1-5 5H9v3H6.2v-13Zm3.4 2.6h2.4a2.4 2.4 0 0 1 2.4 2.4 2.4 2.4 0 0 1-2.4 2.4H9.6V7.1Z"></path><path d="M9.6 12l-1.4 2" stroke="#BFDBFE" stroke-width="1.2" stroke-linecap="round"></path></svg>
+    <svg width="22" height="22" viewBox="0 0 16 16" fill="none" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 13.5h12"></path><path d="M3.5 13.5V3a.8.8 0 0 1 .8-.8h5.4"></path><path d="M9.7 2.2l3.6 1.3v10"></path><circle cx="11.2" cy="8.2" r="0.7" fill="#2563EB" stroke="none"></circle></svg>
+    <span class="state-desc">The open door = passage granted. Used only at approval moments.</span>
+  </div>
+</div>
+</div>
+</body>
+</html>

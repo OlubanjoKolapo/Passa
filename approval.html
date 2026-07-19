@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Approvals · Passa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+.filters {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 32px; border-bottom: 1px solid var(--line-soft);
+  background: #FCFCFD; position: sticky; top: 0; z-index: 2;
+}
+.filters .date-btn {
+  font: 500 11px var(--mono); color: var(--gray-700);
+  background: #fff; border: 1px solid #D1D5DB; border-radius: 6px;
+  padding: 5px 10px; cursor: pointer; font-variant-numeric: tabular-nums;
+}
+.filters input[type="search"] {
+  margin-left: auto; width: 260px;
+  font: 400 12px var(--sans); color: var(--ink);
+  background: #fff; border: 1px solid #D1D5DB; border-radius: 6px;
+  padding: 5px 10px; outline: none;
+}
+.filters input[type="search"]:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+.cols, .row {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) 180px 150px;
+  gap: 12px; padding: 14px 32px;
+}
+.cols {
+  padding: 10px 32px; border-bottom: 1px solid var(--line);
+  font: 600 9.5px var(--sans); text-transform: uppercase;
+  letter-spacing: .08em; color: var(--gray-400);
+}
+.row { align-items: center; border-bottom: 1px solid var(--line-soft); cursor: pointer; }
+.row:hover { background: #FAFAFB; }
+.row .c-details { font: 500 13px var(--sans); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .c-time { font: 400 12px var(--mono); color: var(--gray-500); font-variant-numeric: tabular-nums; }
+.row .c-agent { font: 500 12px var(--mono); color: var(--blue-dark); background: #EFF6FF; padding: 2px 6px; border-radius: 4px; border: 1px solid #BFDBFE; display: inline-block; justify-self: start; }
+.empty { padding: 48px; text-align: center; font: 400 13px var(--sans); color: var(--gray-400); }
+</style>
+</head>
+<body data-nav="approvals">
+<div class="app">
+<div id="sidebar"></div>
+<main class="main">
+  <div class="topbar">
+    <span class="topbar-title">Approvals</span>
+    <span class="topbar-sub">Past 30 Days</span>
+  </div>
+  <div class="filters">
+    <button class="date-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>Jun 18 → Jul 18</button>
+    <input type="search" id="q" placeholder="Search details, agents…">
+  </div>
+  <div class="cols">
+    <span>Details</span><span>Date & Time</span><span>Agent</span>
+  </div>
+  <div id="rows"></div>
+  <div class="empty" id="empty" hidden>No approvals match these filters.</div>
+</main>
+</div>
+<script src="app.js"></script>
+<script>
+const state = { q: '' };
+
+function renderRows() {
+  const q = state.q.trim().toLowerCase();
+  const rows = PASSA_APPROVALS.filter(a =>
+    (!q || (a.details + ' ' + a.agent).toLowerCase().includes(q))
+  );
+  document.getElementById('empty').hidden = rows.length > 0;
+  document.getElementById('rows').innerHTML = rows.map(a => `
+    <div class="row">
+      <span class="c-details">${a.details}</span>
+      <span class="c-time">${a.time}</span>
+      <span class="c-agent">${a.agent}</span>
+    </div>`).join('');
+}
+
+document.getElementById('q').addEventListener('input', (e) => { state.q = e.target.value; renderRows(); });
+renderRows();
+</script>
+</body>
+</html>

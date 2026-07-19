@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Payment detail · Passa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+.crumb-root { font: 500 12px var(--sans); color: var(--gray-500); cursor: pointer; }
+.crumb-root:hover { color: var(--ink); }
+.crumb-sep { color: #D1D5DB; font-size: 12px; }
+.crumb-id { font: 500 12px var(--mono); color: var(--ink); }
+.head { padding: 24px 28px 0; }
+.head-amount { display: flex; align-items: center; gap: 14px; }
+.amount { font-size: 32px; font-weight: 650; letter-spacing: -0.6px; font-variant-numeric: tabular-nums; color: var(--ink); }
+.currency { font: 500 11px var(--mono); color: var(--gray-400); align-self: flex-start; margin-top: 6px; }
+.recovered-chip {
+  font: 500 10.5px var(--mono); color: var(--gray-500);
+  border: 1px solid var(--line); border-radius: 999px; padding: 2px 9px; background: var(--bg-soft);
+}
+.head-id { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+.head-merchant { font: 600 13.5px var(--sans); color: var(--ink); }
+.head-sep { color: #D1D5DB; }
+.head-pay { font: 400 12.5px var(--mono); color: var(--gray-600); }
+.meta { display: flex; margin: 18px 0 0; border-top: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft); padding: 12px 0; }
+.meta > div { padding: 0 24px; border-left: 1px solid var(--line-soft); }
+.meta > div:first-child { padding-left: 0; border-left: none; padding-right: 24px; }
+.meta .k { font: 600 9.5px var(--sans); text-transform: uppercase; letter-spacing: .08em; color: var(--gray-400); margin-bottom: 4px; }
+.meta .v { font: 500 12px var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; }
+.meta .v.sans { font: 500 12px var(--sans); }
+.meta .v .sub { font: 400 11px var(--mono); color: var(--gray-400); }
+.detail-grid { display: grid; grid-template-columns: 3fr 2fr; gap: 20px; padding: 20px 28px 28px; align-items: start; }
+.tl-wrap { padding: 20px 22px 6px; }
+.right-col { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+/* policy table inside timeline */
+.pol { margin-top: 10px; border: 1px solid var(--line); border-radius: 7px; overflow: hidden; }
+.pol-row { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-bottom: 1px solid var(--line-soft); }
+.pol-row:last-child { border-bottom: none; }
+.pol-row.flag { background: #FFFBEB; }
+.pol-name { font: 500 12px var(--mono); color: var(--ink); width: 170px; flex: none; }
+.pol-desc { font: 400 11.5px var(--sans); color: var(--gray-500); flex: 1; }
+.pol-pass { display: inline-flex; align-items: center; gap: 5px; font: 500 10.5px var(--mono); color: #047857; }
+.pol-flag { font: 500 10.5px var(--mono); color: #B45309; border: 1px solid #FDE68A; background: #fff; border-radius: 999px; padding: 1px 8px; }
+.pol-hd-name { font: 500 11px var(--mono); color: var(--ink); }
+.pol-hd-desc { font: 400 11px var(--sans); color: var(--gray-400); }
+/* failure card */
+.fail-card { margin-top: 8px; border: 1px solid #FECACA; background: #FEF2F2; border-radius: 7px; padding: 9px 12px; }
+.fail-code { font: 600 11px var(--mono); color: #B91C1C; }
+.fail-att { font: 400 10.5px var(--mono); color: var(--gray-400); }
+.fail-msg { font: 400 11.5px var(--sans); color: #7F1D1D; margin-top: 3px; }
+/* branch connector */
+.branch { position: relative; height: 46px; }
+.branch-label {
+  position: absolute; left: 58px; top: 12px;
+  font: 600 9.5px var(--mono); color: #1D4ED8;
+  background: #EFF6FF; border: 1px solid #BFDBFE; border-radius: 4px; padding: 2px 6px;
+}
+.branch-body { padding-left: 36px; }
+/* rail attempts */
+.att-row { display: grid; grid-template-columns: 86px 52px 1fr 96px 56px; gap: 8px; align-items: center; padding: 8px 14px; border-bottom: 1px solid var(--line-soft); }
+.att-row:last-child { border-bottom: none; }
+.att-id { font: 500 11.5px var(--mono); color: var(--ink); }
+.att-err { font: 500 11px var(--mono); color: #B91C1C; }
+.att-none { font: 400 11px var(--mono); color: var(--gray-400); }
+.att-dur { font: 400 10.5px var(--mono); color: var(--gray-500); text-align: right; font-variant-numeric: tabular-nums; }
+.att-row .pill { justify-self: end; font-size: 10px; padding: 2px 8px; }
+.att-row .pill .dot { width: 5px; height: 5px; }
+.att-row .rail { text-align: center; }
+/* agent reason / idempotency */
+.reason-quote { font: 400 14.5px/1.55 var(--sans); color: var(--ink); text-wrap: pretty; }
+.reason-src { font: 400 11px var(--mono); color: var(--gray-400); margin-top: 8px; }
+.idem-key { font: 500 12px var(--mono); color: var(--ink); }
+.idem-note { font: 400 11px var(--sans); color: var(--gray-400); margin-top: 6px; }
+.avatar-sm {
+  width: 18px; height: 18px; border-radius: 50%; background: #E0E7FF; color: #3730A3;
+  display: inline-flex; align-items: center; justify-content: center; font: 600 8px var(--sans);
+}
+</style>
+</head>
+<body data-nav="payments">
+<div class="app">
+<div id="sidebar"></div>
+
+<!-- ========== Variant A: pay_8fK2mQxT4vLp — happy path with human approval ========== -->
+<main class="main" id="variant-a" hidden>
+  <div class="topbar" style="padding:0 28px">
+    <a class="crumb-root" href="index.html">Payments</a>
+    <span class="crumb-sep">/</span>
+    <span class="crumb-id">pay_8fK2mQxT4vLp</span>
+    <div style="margin-left:auto;display:flex;gap:8px">
+      <button class="btn">Refund</button>
+      <button class="btn" style="padding:5px 10px">⋯</button>
+    </div>
+  </div>
+
+  <div class="head">
+    <div class="head-amount">
+      <span class="amount">$23.00</span>
+      <span class="currency">USD</span>
+      <span class="pill completed lg"><span class="dot"></span>completed</span>
+    </div>
+    <div class="head-id">
+      <span class="head-merchant">iFood</span>
+      <span class="head-sep">·</span>
+      <span class="head-pay">pay_8fK2mQxT4vLp</span>
+      <button class="copy-btn" data-copy="pay_8fK2mQxT4vLp">copy</button>
+    </div>
+    <div class="meta">
+      <div><div class="k">User</div><div class="v">usr_4Nc8wTjZ</div></div>
+      <div><div class="k">Agent</div><div class="v sans">errand-runner <span class="sub">agt_k3P9dRfM</span></div></div>
+      <div><div class="k">Rail</div><div><span class="rail">PIX</span></div></div>
+      <div><div class="k">Created</div><div class="v">Jul 18, 2026 · 14:02:11 UTC</div></div>
+    </div>
+  </div>
+
+  <div class="detail-grid">
+    <!-- Lifecycle timeline -->
+    <div class="panel">
+      <div class="panel-hd baseline" style="padding:12px 18px">
+        <span class="panel-title">Lifecycle</span>
+        <span class="panel-meta" style="margin-left:auto;font-size:11px">6 events · 1m 45.4s total</span>
+      </div>
+      <div class="tl-wrap">
+
+        <div class="tl-row">
+          <div class="tl-spine">
+            <div class="tl-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"></path></svg></div>
+            <div class="tl-line"></div>
+          </div>
+          <div class="tl-body">
+            <div class="tl-head"><span class="tl-title">Intent received</span><span class="tl-delta t0">t₀</span></div>
+            <div class="tl-ts">14:02:11.482 UTC</div>
+            <div class="tl-note">POST /v1/payments from <span class="id">errand-runner</span> via SDK 2.14</div>
+          </div>
+        </div>
+
+        <div class="tl-row">
+          <div class="tl-spine">
+            <div class="tl-icon blue"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"></path></svg></div>
+            <div class="tl-line"></div>
+          </div>
+          <div class="tl-body">
+            <div class="tl-head"><span class="tl-title">Policy evaluated</span><span class="tl-delta">+19 ms</span></div>
+            <div class="tl-ts">14:02:11.501 UTC</div>
+            <div class="pol">
+              <div class="pol-row"><span class="pol-hd-name">policy v14</span><span class="pol-hd-desc">3 rules · evaluated in 19 ms</span></div>
+              <div class="pol-row">
+                <span class="pol-name">spending_cap</span>
+                <span class="pol-desc">$23.00 ≤ $50.00 daily · $27.00 remaining</span>
+                <span class="pol-pass"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.75 6 6 9-13.5"></path></svg>pass</span>
+              </div>
+              <div class="pol-row">
+                <span class="pol-name">merchant_allowlist</span>
+                <span class="pol-desc">iFood ∈ food_delivery</span>
+                <span class="pol-pass"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.75 6 6 9-13.5"></path></svg>pass</span>
+              </div>
+              <div class="pol-row flag">
+                <span class="pol-name">approval_threshold</span>
+                <span class="pol-desc">$23.00 &gt; $10.00 single-charge limit</span>
+                <span class="pol-flag">→ requires approval</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tl-row">
+          <div class="tl-spine">
+            <div class="tl-icon amber"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0"></path></svg></div>
+            <div class="tl-line"></div>
+          </div>
+          <div class="tl-body">
+            <div class="tl-head"><span class="tl-title">Approval requested</span><span class="tl-delta">+31 ms</span></div>
+            <div class="tl-ts">14:02:11.532 UTC</div>
+            <div class="tl-note">Push sent to <span class="id">usr_4Nc8wTjZ</span> · triggered by <span class="id">approval_threshold</span></div>
+          </div>
+        </div>
+
+        <div class="tl-row">
+          <div class="tl-spine">
+            <div class="tl-icon blue-fill"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#2563EB" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 13.5h12"></path><path d="M3.5 13.5V3a.8.8 0 0 1 .8-.8h5.4"></path><path d="M9.7 2.2l3.6 1.3v10"></path><circle cx="11.2" cy="8.2" r="0.7" fill="#2563EB" stroke="none"></circle></svg></div>
+            <div class="tl-line"></div>
+          </div>
+          <div class="tl-body">
+            <div class="tl-head"><span class="tl-title">Approved by user</span><span class="tl-delta amber">+1m 42.6s</span></div>
+            <div class="tl-ts">14:03:54.108 UTC</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:5px">
+              <span class="avatar-sm">MR</span>
+              <span class="tl-note" style="margin-top:0">Approved by <span style="font-weight:500;color:#374151">Maya R.</span> via push · human responded in 1m 43s</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tl-row">
+          <div class="tl-spine">
+            <div class="tl-icon blue"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"></path></svg></div>
+            <div class="tl-line"></div>
+          </div>
+          <div class="tl-body">
+            <div class="tl-head"><span class="tl-title">Routed to Pix</span><span class="tl-delta">+93 ms</span></div>
+            <div class="tl-ts">14:03:54.201 UTC</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:5px">
+              <span class="rail">PIX</span>
+              <span style="font:400 11px var(--mono);color:var(--gray-400)">att_41kZpQ · lowest-cost rail for BR merchant</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tl-row">
+          <div class="tl-spine">
+            <div class="tl-icon green"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path></svg></div>
+          </div>
+          <div class="tl-body last">
+            <div class="tl-head"><span class="tl-title">Confirmed</span><span class="tl-delta">+2.6 s</span></div>
+            <div class="tl-ts">14:03:56.847 UTC</div>
+            <div class="tl-note">End-to-end confirmation from rail · reconciled against intent</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Right: stacked panels -->
+    <div class="right-col">
+      <div class="panel">
+        <div class="panel-hd">
+          <span class="panel-title">Request payload</span>
+          <span class="panel-meta" style="font-size:10px">application/json</span>
+          <button class="copy-btn" style="margin-left:auto" data-toggle-payload="a">collapse</button>
+        </div>
+        <pre class="payload" id="payload-a-open"><span class="j-p">{</span>
+  <span class="j-k">"amount"</span><span class="j-p">:</span> <span class="j-n">2300</span><span class="j-p">,</span>
+  <span class="j-k">"currency"</span><span class="j-p">:</span> <span class="j-s">"USD"</span><span class="j-p">,</span>
+  <span class="j-k">"merchant"</span><span class="j-p">:</span> <span class="j-p">{</span> <span class="j-k">"id"</span><span class="j-p">:</span> <span class="j-s">"mrc_7Hq2vXbA"</span><span class="j-p">,</span> <span class="j-k">"name"</span><span class="j-p">:</span> <span class="j-s">"iFood"</span> <span class="j-p">},</span>
+  <span class="j-k">"agent"</span><span class="j-p">:</span> <span class="j-p">{</span> <span class="j-k">"id"</span><span class="j-p">:</span> <span class="j-s">"agt_k3P9dRfM"</span><span class="j-p">,</span> <span class="j-k">"name"</span><span class="j-p">:</span> <span class="j-s">"errand-runner"</span> <span class="j-p">},</span>
+  <span class="j-k">"user"</span><span class="j-p">:</span> <span class="j-s">"usr_4Nc8wTjZ"</span><span class="j-p">,</span>
+  <span class="j-k">"rail_hint"</span><span class="j-p">:</span> <span class="j-s">"pix"</span><span class="j-p">,</span>
+  <span class="j-k">"metadata"</span><span class="j-p">:</span> <span class="j-p">{</span>
+    <span class="j-k">"order_ref"</span><span class="j-p">:</span> <span class="j-s">"ord_2291"</span><span class="j-p">,</span>
+    <span class="j-k">"category"</span><span class="j-p">:</span> <span class="j-s">"food_delivery"</span>
+  <span class="j-p">}</span>
+<span class="j-p">}</span></pre>
+        <div class="payload-collapsed" id="payload-a-closed" hidden>{ "amount": 2300, "currency": "USD", … 7 fields }</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-hd"><span class="panel-title">Agent reason</span></div>
+        <div style="padding:14px 16px">
+          <div class="reason-quote">“Ordering lunch for Saturday's team offsite — two items from iFood, within the weekly food budget.”</div>
+          <div class="reason-src">reason · stated by errand-runner at intent time</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-hd"><span class="panel-title">Idempotency key</span></div>
+        <div style="padding:12px 16px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="idem-key">idem_9f3KqLmT2wPv8Rc4</span>
+            <button class="copy-btn" data-copy="idem_9f3KqLmT2wPv8Rc4">copy</button>
+          </div>
+          <div class="idem-note">Retries with this key return the original result — never a duplicate charge.</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-hd baseline">
+          <span class="panel-title">Webhook deliveries</span>
+          <span class="panel-meta" style="margin-left:auto">api.acme.dev/webhooks/passa</span>
+        </div>
+        <div class="wh-row"><span class="wh-event">payment.created</span><span class="wh-n">#1</span><span class="code ok">200</span><span class="wh-ms">142 ms</span><span class="wh-ts">14:02:11</span></div>
+        <div class="wh-row"><span class="wh-event">payment.pending_approval</span><span class="wh-n">#1</span><span class="code ok">200</span><span class="wh-ms">98 ms</span><span class="wh-ts">14:02:11</span></div>
+        <div class="wh-row"><span class="wh-event">payment.approved</span><span class="wh-n">#1</span><span class="code err">503</span><span class="wh-ms">5.0 s</span><span class="wh-ts">14:03:54</span></div>
+        <div class="wh-row"><span class="wh-event retry">↳ retry</span><span class="wh-n">#2</span><span class="code ok">200</span><span class="wh-ms">96 ms</span><span class="wh-ts">14:03:59</span></div>
+        <div class="wh-row"><span class="wh-event">payment.completed</span><span class="wh-n">#1</span><span class="code ok">200</span><span class="wh-ms">87 ms</span><span class="wh-ts">14:03:57</span></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ========== Variant B: pay_3jW9rTnB7xKe — Pix times out, retried via Card ========== -->
+<main class="main" id="variant-b" hidden>
+  <div class="topbar" style="padding:0 28px">
+    <a class="crumb-root" href="index.html">Payments</a>
+    <span class="crumb-sep">/</span>
+    <span class="crumb-id">pay_3jW9rTnB7xKe</span>
+    <div style="margin-left:auto;display:flex;gap:8px">
+      <button class="btn">Refund</button>
+      <button class="btn" style="padding:5px 10px">⋯</button>
+    </div>
+  </div>
+
+  <div class="head">
+    <div class="head-amount">
+      <span class="amount">$18.40</span>
+      <span class="currency">USD</span>
+      <span class="pill completed lg"><span class="dot"></span>completed</span>
+      <span class="recovered-chip">recovered via card fallback</span>
+    </div>
+    <div class="head-id">
+      <span class="head-merchant">Rappi</span>
+      <span class="head-sep">·</span>
+      <span class="head-pay">pay_3jW9rTnB7xKe</span>
+      <button class="copy-btn" data-copy="pay_3jW9rTnB7xKe">copy</button>
+    </div>
+    <div class="meta">
+      <div><div class="k">User</div><div class="v">usr_4Nc8wTjZ</div></div>
+      <div><div class="k">Agent</div><div class="v sans">errand-runner <span class="sub">agt_k3P9dRfM</span></div></div>
+      <div>
+        <div class="k">Rail</div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span class="rail failed">PIX</span>
+          <span style="color:var(--gray-400);font-size:11px">→</span>
+          <span class="rail">CARD</span>
+        </div>
+      </div>
+      <div><div class="k">Created</div><div class="v">Jul 18, 2026 · 09:14:03 UTC</div></div>
+    </div>
+  </div>
+
+  <div class="detail-grid">
+    <!-- Lifecycle timeline with branch -->
+    <div class="panel">
+      <div class="panel-hd baseline" style="padding:12px 18px">
+        <span class="panel-title">Lifecycle</span>
+        <span class="panel-meta" style="margin-left:auto;font-size:11px">7 events · 33.7s total · 1 fallback</span>
+      </div>
+      <div class="tl-wrap">
+
+        <div class="tl-row">
+          <div class="tl-spine">
+            <div class="tl-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"></path></svg></div>
+            <div class="tl-line"></div>
+          </div>
+          <div class="tl-body">
+            <div class="tl-head"><span class="tl-title">Intent received</span><span class="tl-delta t0">t₀</span></div>
+            <div class="tl-ts">09:14:03.201 UTC</div>
+            <div class="tl-note">POST /v1/payments from <span class="id">errand-runner</span> · recurring order</div>
+          </div>
+        </div>
+
+        <div class="tl-row">
+          <div class="tl-spine">
+            <div class="tl-icon blue"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"></path></svg></div>
+            <div class="tl-line"></div>
+          </div>
+          <div class="tl-body">
+            <div class="tl-head"><span class="tl-title">Policy evaluated</span><span class="tl-delta">+28 ms</span></div>
+            <div class="tl-ts">09:14:03.229 UTC</div>
+            <div class="tl-note">3 rules · all passed · auto-allowed (recurring order pre-approved) · <span class="id">policy v14</span></div>
+          </div>
+        </div>
+
+        <div class="tl-row">
+          <div class="tl-spine">
+            <div class="tl-icon blue"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"></path></svg></div>
+            <div class="tl-line"></div>
+          </div>
+          <div class="tl-body">
+            <div class="tl-head"><span class="tl-title">Routed to Pix</span><span class="tl-delta">+83 ms</span></div>
+            <div class="tl-ts">09:14:03.312 UTC</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:5px">
+              <span class="rail">PIX</span>
+              <span style="font:400 11px var(--mono);color:var(--gray-400)">att_92hFqK</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="tl-row">
+          <div class="tl-spine">
+            <div class="tl-icon red"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path></svg></div>
+            <div class="tl-line red"></div>
+          </div>
+          <div class="tl-body" style="padding-bottom:4px">
+            <div class="tl-head"><span class="tl-title red">Pix rail failed</span><span class="tl-delta red">+30.5 s</span></div>
+            <div class="tl-ts">09:14:33.847 UTC</div>
+            <div class="fail-card">
+              <div style="display:flex;align-items:center;gap:8px"><span class="fail-code">RAIL_TIMEOUT</span><span class="fail-att">att_92hFqK</span></div>
+              <div class="fail-msg">Pix provider did not confirm within 30 s. No funds moved — intent remains open.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="branch">
+          <svg style="position:absolute;left:0;top:0" width="70" height="46" viewBox="0 0 70 46" fill="none"><path d="M14 2 C14 30 50 14 50 46" stroke="#2563EB" stroke-width="2"></path></svg>
+          <span class="branch-label">fallback branch</span>
+        </div>
+
+        <div class="branch-body">
+          <div class="tl-row">
+            <div class="tl-spine">
+              <div class="tl-icon blue-fill"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"></path></svg></div>
+              <div class="tl-line"></div>
+            </div>
+            <div class="tl-body">
+              <div class="tl-head"><span class="tl-title">Fallback matched</span><span class="tl-delta">+54 ms</span></div>
+              <div class="tl-ts">09:14:33.901 UTC</div>
+              <div class="tl-note">Policy <span class="id">fallback: ["card"]</span> — no re-approval needed, same intent</div>
+            </div>
+          </div>
+
+          <div class="tl-row">
+            <div class="tl-spine">
+              <div class="tl-icon blue"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2.25 8.25h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"></path></svg></div>
+              <div class="tl-line"></div>
+            </div>
+            <div class="tl-body">
+              <div class="tl-head"><span class="tl-title">Retried via Card</span><span class="tl-delta">+319 ms</span></div>
+              <div class="tl-ts">09:14:34.220 UTC</div>
+              <div style="display:flex;align-items:center;gap:8px;margin-top:5px">
+                <span class="rail">CARD</span>
+                <span style="font:400 11px var(--mono);color:var(--gray-400)">att_93bTrW · same idempotency key — no duplicate charge</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="tl-row">
+            <div class="tl-spine">
+              <div class="tl-icon green"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"></path></svg></div>
+            </div>
+            <div class="tl-body last">
+              <div class="tl-head"><span class="tl-title">Confirmed</span><span class="tl-delta">+2.7 s</span></div>
+              <div class="tl-ts">09:14:36.914 UTC</div>
+              <div class="tl-note">Card auth + capture · reconciled against original intent</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Right: stacked panels -->
+    <div class="right-col">
+      <div class="panel">
+        <div class="panel-hd baseline">
+          <span class="panel-title">Rail attempts</span>
+          <span class="panel-meta" style="margin-left:auto">2 attempts</span>
+        </div>
+        <div class="att-row">
+          <span class="att-id">att_92hFqK</span>
+          <span class="rail">PIX</span>
+          <span class="att-err">RAIL_TIMEOUT</span>
+          <span class="pill failed"><span class="dot"></span>failed</span>
+          <span class="att-dur">30.5 s</span>
+        </div>
+        <div class="att-row">
+          <span class="att-id">att_93bTrW</span>
+          <span class="rail">CARD</span>
+          <span class="att-none">—</span>
+          <span class="pill completed"><span class="dot"></span>completed</span>
+          <span class="att-dur">2.7 s</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-hd">
+          <span class="panel-title">Request payload</span>
+          <span class="panel-meta" style="font-size:10px">application/json</span>
+          <button class="copy-btn" style="margin-left:auto" data-toggle-payload="b">expand</button>
+        </div>
+        <pre class="payload" id="payload-b-open" hidden><span class="j-p">{</span>
+  <span class="j-k">"amount"</span><span class="j-p">:</span> <span class="j-n">1840</span><span class="j-p">,</span>
+  <span class="j-k">"currency"</span><span class="j-p">:</span> <span class="j-s">"USD"</span><span class="j-p">,</span>
+  <span class="j-k">"merchant"</span><span class="j-p">:</span> <span class="j-p">{</span> <span class="j-k">"id"</span><span class="j-p">:</span> <span class="j-s">"mrc_2Rs8kQpD"</span><span class="j-p">,</span> <span class="j-k">"name"</span><span class="j-p">:</span> <span class="j-s">"Rappi"</span> <span class="j-p">},</span>
+  <span class="j-k">"agent"</span><span class="j-p">:</span> <span class="j-p">{</span> <span class="j-k">"id"</span><span class="j-p">:</span> <span class="j-s">"agt_k3P9dRfM"</span><span class="j-p">,</span> <span class="j-k">"name"</span><span class="j-p">:</span> <span class="j-s">"errand-runner"</span> <span class="j-p">},</span>
+  <span class="j-k">"user"</span><span class="j-p">:</span> <span class="j-s">"usr_4Nc8wTjZ"</span><span class="j-p">,</span>
+  <span class="j-k">"rail_hint"</span><span class="j-p">:</span> <span class="j-s">"pix"</span><span class="j-p">,</span>
+  <span class="j-k">"fallback"</span><span class="j-p">:</span> <span class="j-p">[</span><span class="j-s">"card"</span><span class="j-p">],</span>
+  <span class="j-k">"metadata"</span><span class="j-p">:</span> <span class="j-p">{</span> <span class="j-k">"order_ref"</span><span class="j-p">:</span> <span class="j-s">"ord_2318"</span><span class="j-p">,</span> <span class="j-k">"recurring"</span><span class="j-p">:</span> <span class="j-n">true</span> <span class="j-p">}</span>
+<span class="j-p">}</span></pre>
+        <div class="payload-collapsed" id="payload-b-closed">{ "amount": 1840, "currency": "USD", "fallback": ["card"], … 8 fields }</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-hd"><span class="panel-title">Agent reason</span></div>
+        <div style="padding:14px 16px">
+          <div class="reason-quote">“Weekly grocery restock from Rappi — same basket as last week, recurring Saturday order.”</div>
+          <div class="reason-src">reason · stated by errand-runner at intent time</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-hd"><span class="panel-title">Idempotency key</span></div>
+        <div style="padding:12px 16px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="idem-key">idem_5tGx1NpQ7kJd3Wm9</span>
+            <button class="copy-btn" data-copy="idem_5tGx1NpQ7kJd3Wm9">copy</button>
+          </div>
+          <div class="idem-note">The Card retry reused this key — one intent, one charge, across both rails.</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-hd baseline">
+          <span class="panel-title">Webhook deliveries</span>
+          <span class="panel-meta" style="margin-left:auto">api.acme.dev/webhooks/passa</span>
+        </div>
+        <div class="wh-row"><span class="wh-event">payment.created</span><span class="wh-n">#1</span><span class="code ok">200</span><span class="wh-ms">118 ms</span><span class="wh-ts">09:14:03</span></div>
+        <div class="wh-row"><span class="wh-event">payment.awaiting_rail</span><span class="wh-n">#1</span><span class="code ok">200</span><span class="wh-ms">92 ms</span><span class="wh-ts">09:14:03</span></div>
+        <div class="wh-row"><span class="wh-event">payment.rail_failed</span><span class="wh-n">#1</span><span class="code ok">200</span><span class="wh-ms">104 ms</span><span class="wh-ts">09:14:33</span></div>
+        <div class="wh-row"><span class="wh-event">payment.retried</span><span class="wh-n">#1</span><span class="code ok">200</span><span class="wh-ms">89 ms</span><span class="wh-ts">09:14:34</span></div>
+        <div class="wh-row"><span class="wh-event">payment.completed</span><span class="wh-n">#1</span><span class="code ok">200</span><span class="wh-ms">95 ms</span><span class="wh-ts">09:14:37</span></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+</div>
+<script src="app.js"></script>
+<script>
+// Pick variant by ?id= — the fallback payment gets variant B, everything else variant A.
+const params = new URLSearchParams(location.search);
+const variant = params.get('id') === 'pay_3jW9rTnB7xKe' ? 'b' : 'a';
+document.getElementById('variant-' + variant).hidden = false;
+
+// Collapsible payloads
+document.querySelectorAll('[data-toggle-payload]').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const key = btn.dataset.togglePayload;
+    const open = document.getElementById('payload-' + key + '-open');
+    const closed = document.getElementById('payload-' + key + '-closed');
+    const isOpen = !open.hidden;
+    open.hidden = isOpen;
+    closed.hidden = !isOpen;
+    btn.textContent = isOpen ? 'expand' : 'collapse';
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>API Keys · Passa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+.sandbox-banner {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 24px; background: var(--bg-soft);
+  border-bottom: 1px dashed #D1D5DB;
+  font: 400 12px var(--sans); color: var(--gray-500);
+}
+.sandbox-tag {
+  font: 600 9px var(--mono); letter-spacing: .06em; color: var(--gray-500);
+  border: 1px dashed var(--gray-400); border-radius: 4px; padding: 2px 6px;
+}
+.dev-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 20px; padding: 20px 24px 28px; align-items: start; }
+.dev-col { display: flex; flex-direction: column; gap: 16px; }
+.key-row { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid var(--line-soft); }
+.key-row:last-child { border-bottom: none; }
+.key-name { width: 110px; flex: none; }
+.key-name .t { font: 500 12px var(--sans); color: var(--ink); }
+.key-name .s { font: 400 10px var(--mono); color: var(--gray-400); margin-top: 2px; }
+.key-value {
+  flex: 1; font: 500 12px var(--mono); color: var(--gray-700);
+  background: var(--bg-soft); border: 1px solid var(--line-soft); border-radius: 6px;
+  padding: 6px 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.key-value.dark { color: var(--ink); }
+.wh-health { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; font: 500 10px var(--mono); color: #047857; }
+.wh-health .dot { width: 5px; height: 5px; border-radius: 50%; background: #10B981; }
+.field-label { font: 500 10px var(--mono); color: var(--gray-400); margin-bottom: 4px; }
+.event-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.event-chip {
+  font: 500 10.5px var(--mono); color: var(--gray-700);
+  border: 1px solid #D1D5DB; border-radius: 4px; padding: 2px 7px; background: #fff;
+}
+.event-add {
+  font: 500 10.5px var(--mono); color: var(--blue);
+  border: 1px dashed #BFDBFE; border-radius: 4px; padding: 2px 7px; background: #fff; cursor: pointer;
+}
+.event-add:hover { background: #EFF6FF; }
+.evt-row {
+  display: grid; grid-template-columns: 118px minmax(0,1fr) 44px 78px;
+  gap: 8px; align-items: center; padding: 8px 14px; border-bottom: 1px solid var(--line-soft);
+}
+.evt-row:last-child { border-bottom: none; }
+.evt-id { font: 400 10.5px var(--mono); color: var(--gray-400); }
+.evt-name { font: 500 12px var(--mono); color: var(--ink); }
+.evt-name.retry { color: var(--gray-400); padding-left: 12px; }
+.evt-ts { font: 400 10.5px var(--mono); color: var(--gray-400); text-align: right; font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body data-nav="apikeys">
+<div class="app">
+<div id="sidebar"></div>
+<main class="main">
+  <div class="topbar" style="gap:10px">
+    <span class="topbar-title">API Keys</span>
+    <div class="seg env" style="margin-left:auto">
+      <button id="env-sandbox" class="on">Sandbox</button>
+      <button id="env-live">Live</button>
+    </div>
+  </div>
+
+  <div class="sandbox-banner" id="sandbox-banner">
+    <span class="sandbox-tag">SANDBOX</span>
+    Test data only — no real money moves. Keys below are test keys.
+  </div>
+
+  <div class="dev-grid">
+    <div class="dev-col">
+      <div class="panel">
+        <div class="panel-hd">
+          <span class="panel-title">API keys</span>
+          <button class="btn" style="margin-left:auto;font-size:11px;padding:3px 10px">Roll keys…</button>
+        </div>
+        <div class="key-row">
+          <div class="key-name"><div class="t">Publishable</div><div class="s">client-side safe</div></div>
+          <span class="key-value" id="pk-value">pub_test_51Kx8mQvT2wLp9Rc4jFhZ</span>
+          <button class="copy-btn pad" id="pk-copy">copy</button>
+        </div>
+        <div class="key-row">
+          <div class="key-name"><div class="t">Secret</div><div class="s">server only</div></div>
+          <span class="key-value" id="sk-value"></span>
+          <button class="copy-btn pad" id="sk-toggle">reveal</button>
+          <button class="copy-btn pad" id="sk-copy">copy</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  </div>
+</main>
+</div>
+<script src="app.js"></script>
+<script>
+const dev = { env: 'sandbox', skShown: false, whShown: false };
+const KEYS = {
+  sandbox: { pk: 'pub_test_51Kx8mQvT2wLp9Rc4jFhZ', sk: 'sec_test_9mQ4vLpX2wRc8Tj1kFhZ6bNd', prefix: 'sec_test_' },
+  live: { pk: 'pub_live_51Kx8mQvT2wLp9Rc4jFhZ', sk: 'sec_live_3xW7nBqK5tYv1mJc9RfL4gHs', prefix: 'sec_live_' },
+};
+const WH_SECRET = 'whs_7Kp2xQm9TvL4wRc8';
+
+function renderDev() {
+  const sand = dev.env === 'sandbox';
+  const keys = KEYS[dev.env];
+  document.getElementById('env-sandbox').className = sand ? 'on' : '';
+  document.getElementById('env-live').className = sand ? '' : 'on-live';
+  document.getElementById('sandbox-banner').hidden = !sand;
+  document.getElementById('pk-value').textContent = keys.pk;
+  document.getElementById('sk-value').textContent = dev.skShown ? keys.sk : keys.prefix + '••••••••••••••••••••';
+  document.getElementById('sk-toggle').textContent = dev.skShown ? 'hide' : 'reveal';
+  const env = document.getElementById('sb-env');
+  if (env) {
+    env.className = sand ? 'sb-env-sandbox' : 'sb-env-live';
+    env.innerHTML = sand ? 'SANDBOX' : '<span class="dot"></span>live';
+  }
+}
+
+document.getElementById('env-sandbox').addEventListener('click', () => { dev.env = 'sandbox'; renderDev(); });
+document.getElementById('env-live').addEventListener('click', () => { dev.env = 'live'; renderDev(); });
+document.getElementById('sk-toggle').addEventListener('click', () => { dev.skShown = !dev.skShown; renderDev(); });
+
+function copyFlash(btn, text) {
+  try { navigator.clipboard.writeText(text); } catch (e) {}
+  btn.textContent = 'copied ✓';
+  clearTimeout(btn._t);
+  btn._t = setTimeout(() => { btn.textContent = 'copy'; }, 1600);
+}
+document.getElementById('pk-copy').addEventListener('click', (e) => copyFlash(e.target, KEYS[dev.env].pk));
+document.getElementById('sk-copy').addEventListener('click', (e) => copyFlash(e.target, KEYS[dev.env].sk));
+
+// renderDev runs after the shared sidebar exists
+document.addEventListener('DOMContentLoaded', renderDev);
+</script>
+</body>
+</html>
