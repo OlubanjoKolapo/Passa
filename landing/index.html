@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Passa — Let your agents pay. On your terms.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Interactive Mouse Glow -->
+<div class="glow-pointer" id="glow"></div>
+
+<!-- Sleek Grid Background -->
+<div class="bg-grid"></div>
+
+<div class="nav-wrapper">
+  <header class="container nav">
+    <div class="nav-logo">
+      <img src="../assets/Passa Logo@2x.png" alt="Passa Logo">
+    </div>
+    <nav class="nav-links">
+      <a href="#">Product</a>
+      <a href="#">Docs</a>
+      <a href="#">Pricing</a>
+    </nav>
+    <div class="nav-actions">
+      <a href="#" class="btn btn-secondary">Sign In</a>
+    </div>
+  </header>
+</div>
+
+<section class="hero-center container">
+  <div class="hero-content">
+    <h1 class="hero-title">Let your agents pay.<br>On your terms.</h1>
+    
+    <p class="hero-sub">Passa is the orchestration layer between AI agents and money movement. Set the rules — Passa routes, executes, and reconciles across the rails the world actually uses.</p>
+    
+    <div class="hero-actions">
+      <a href="#" class="btn btn-primary">
+        Read the docs
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+      </a>
+      <a href="#" class="btn btn-secondary">View on GitHub</a>
+    </div>
+  </div>
+
+  <div class="hero-visual-center">
+    <!-- Premium Glowing Border & Perspective Wrap -->
+    <div class="perspective-wrap">
+      <div class="browser-frame">
+        <div class="bf-head">
+          <div class="bf-dots"><i></i><i></i><i></i></div>
+          <div class="bf-url">passa.com/dashboard</div>
+        </div>
+        <img src="../assets/Hero screen.jpeg" alt="Passa Dashboard">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 2: The Problem -->
+<section class="problem container section-pad">
+  <div class="problem-grid">
+    <div class="problem-card">
+      <h3>Agents can decide, but they can't pay.</h3>
+      <p>Every agent-payment tool assumes a card — most of the world doesn't use one.</p>
+    </div>
+    <div class="problem-card">
+      <h3>India is solving it for UPI. Visa for cards.</h3>
+      <p>Everyone's solving one rail at a time. Passa connects them all into a single endpoint.</p>
+    </div>
+    <div class="problem-card">
+      <h3>The orchestration layer.</h3>
+      <p>Passa decides whether a payment is allowed, routes it, executes it, and handles fallbacks.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Section 3: How it works -->
+<section class="how-it-works container section-pad">
+  <div class="hiw-flow">
+    <div class="hiw-step">
+      <div class="hiw-head">Decide</div>
+      <p>Evaluate your rules before anything moves.</p>
+    </div>
+    <div class="hiw-line"></div>
+    <div class="hiw-step">
+      <div class="hiw-head">Route</div>
+      <p>Pick the right rail for this user.</p>
+    </div>
+    <div class="hiw-line"></div>
+    <div class="hiw-step">
+      <div class="hiw-head">Execute</div>
+      <p>Trigger the payment on that rail.</p>
+    </div>
+    <div class="hiw-line"></div>
+    <div class="hiw-step">
+      <div class="hiw-head">Reconcile</div>
+      <p>Confirm, retry, and record.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Section 4: Rails -->
+<section class="rails container section-pad">
+  <div class="rails-header">
+    <h2 class="section-title">One API. Every rail.</h2>
+  </div>
+  <div class="rails-grid">
+    <div class="rail-badge">PIX</div>
+    <div class="rail-badge">UPI</div>
+    <div class="rail-badge">GCASH</div>
+    <div class="rail-badge">MOMO</div>
+    <div class="rail-badge">PAY BY BANK</div>
+    <div class="rail-badge">CARD</div>
+  </div>
+  <p class="rails-note">Fallback is automatic — if Pix times out, Passa retries on card with the same idempotency key, so there's never a duplicate charge.</p>
+</section>
+
+<!-- Section 5: Policy -->
+<section class="policy container section-pad">
+  <div class="policy-split">
+    <div class="policy-text">
+      <h2>Set the rules in plain English.</h2>
+      <p>Passa evaluates every payment against your policies before anything moves. No more hardcoded logic in your agent's prompts.</p>
+    </div>
+    
+    <div class="policy-widget">
+      <!-- Left side: Rules -->
+      <div class="pw-rules">
+        <div class="pw-rule">Above <span class="chip">$20.00</span>, ask the user</div>
+        <div class="pw-rule">Max <span class="chip">$500.00</span> per user per <span class="chip">day</span></div>
+        <div class="pw-rule">Only allow <span class="chip">food_delivery</span> merchants</div>
+        <div class="pw-rule">Prefer <span class="chip">Pix</span>, fall back to <span class="chip">Card</span></div>
+      </div>
+      
+      <!-- Right side: Verdict -->
+      <div class="pw-verdict">
+        <div class="pw-v-label">Verdict for $23.00</div>
+        <div class="pw-v-arrow">→</div>
+        <div class="pw-v-pill pending_approval"><span class="dot"></span> pending approval</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 6: Observability -->
+<section class="observability container section-pad">
+  <div class="obs-header">
+    <h2 class="section-title">See exactly what your agent did, and why.</h2>
+  </div>
+  <div class="obs-frame browser-frame">
+    <div class="bf-head"><div class="bf-dots"><i></i><i></i><i></i></div></div>
+    <div class="obs-timeline">
+      <div class="tl-row">
+        <div class="tl-time">14:03:56.120</div>
+        <div class="tl-node blue"></div>
+        <div class="tl-content">
+          <div class="tl-title">Payment requested by agent</div>
+          <div class="tl-desc">amount: $23.00, merchant: ifood, rail: auto</div>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-time">14:03:56.340</div>
+        <div class="tl-node green"></div>
+        <div class="tl-content">
+          <div class="tl-title">Rules evaluated</div>
+          <div class="tl-desc">Passed spending_cap, merchant_allowlist. Triggered approval_threshold.</div>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-time">14:03:56.800</div>
+        <div class="tl-node amber"></div>
+        <div class="tl-content">
+          <div class="tl-title">Pending approval</div>
+          <div class="tl-desc">Push notification sent to user for $23.00.</div>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-time">14:05:12.050</div>
+        <div class="tl-node green"></div>
+        <div class="tl-content">
+          <div class="tl-title">Approved by user</div>
+          <div class="tl-desc">Routing to PIX (region BR preference).</div>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-time">14:05:13.100</div>
+        <div class="tl-node red"></div>
+        <div class="tl-content">
+          <div class="tl-title">PIX execution failed</div>
+          <div class="tl-desc">Timeout from Central Bank.</div>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-time">14:05:13.150</div>
+        <div class="tl-node blue"></div>
+        <div class="tl-content">
+          <div class="tl-title">Automatic fallback</div>
+          <div class="tl-desc">Retrying on CARD with same idempotency key.</div>
+        </div>
+      </div>
+      <div class="tl-row last">
+        <div class="tl-time">14:05:14.200</div>
+        <div class="tl-node green"></div>
+        <div class="tl-content">
+          <div class="tl-title">Payment completed</div>
+          <div class="tl-desc">Successfully charged CARD. Webhook fired.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 7: Approval -->
+<section class="approval container section-pad">
+  <div class="approval-split">
+    <div class="approval-mobile">
+      <div class="mobile-frame">
+        <div class="mf-notch"></div>
+        <div class="mf-logo"><img src="../assets/Passa Logo@2x.png" alt="Passa"></div>
+        <div class="mf-content">
+          <div class="mf-amount">$23.00</div>
+          <div class="mf-merchant">iFood</div>
+          <div class="mf-reason">"Team lunch for Saturday offsite"</div>
+          <div class="mf-timer">Expires in 14m 59s</div>
+          <div class="mf-actions">
+            <button class="mf-btn approve">Approve</button>
+            <button class="mf-btn decline">Decline</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="approval-text">
+      <h2>When it matters, a human decides.</h2>
+      <p>Give your agents autonomy, but retain control over high-stakes transactions with seamless push approvals.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Section 8: Quickstart -->
+<section class="quickstart container section-pad">
+  <div class="qs-header">
+    <h2 class="section-title">Start building in minutes</h2>
+  </div>
+  <div class="qs-grid">
+    <div class="qs-step">
+      <div class="qs-num">1</div>
+      <h3>Install the SDK</h3>
+      <div class="browser-frame qs-code">
+        <div class="hc-top">
+          <div class="hc-filename">Terminal</div>
+          <button class="hc-copy" data-copy="npm install @passa/sdk">copy</button>
+        </div>
+        <pre class="hc-body"><code><span class="c-p">$</span> npm install @passa/sdk</code></pre>
+      </div>
+    </div>
+    
+    <div class="qs-step">
+      <div class="qs-num">2</div>
+      <h3>Configure</h3>
+      <div class="browser-frame qs-code">
+        <div class="hc-top">
+          <div class="hc-filename">agent.js</div>
+          <button class="hc-copy" data-copy="import Passa from '@passa/sdk';&#10;const passa = new Passa(process.env.PASSA_KEY);">copy</button>
+        </div>
+        <pre class="hc-body"><code><span class="c-k">import</span> Passa <span class="c-k">from</span> <span class="c-s">'@passa/sdk'</span>;
+<span class="c-k">const</span> passa <span class="c-k">= new</span> <span class="c-v">Passa</span>(process.env.PASSA_KEY);</code></pre>
+      </div>
+    </div>
+
+    <div class="qs-step">
+      <div class="qs-num">3</div>
+      <h3>Execute</h3>
+      <div class="browser-frame qs-code">
+        <div class="hc-top">
+          <div class="hc-filename">payment.js</div>
+          <button class="hc-copy" data-copy="await passa.pay({ amount: 2300, currency: 'USD', merchant: 'ifood' });">copy</button>
+        </div>
+        <pre class="hc-body"><code><span class="c-k">await</span> passa.<span class="c-v">pay</span>({ 
+  amount<span class="c-p">:</span> <span class="c-n">2300</span>, 
+  currency<span class="c-p">:</span> <span class="c-s">'USD'</span>, 
+  merchant<span class="c-p">:</span> <span class="c-s">'ifood'</span> 
+});</code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container footer-inner">
+    <div class="ft-left">
+      <div class="ft-logo">
+        <img src="../assets/Passa Logo@2x.png" alt="Passa">
+      </div>
+      <div class="ft-sandbox">
+        <span class="dot"></span> Passa is in sandbox. No real funds move.
+      </div>
+    </div>
+    <div class="ft-links">
+      <div class="ft-col">
+        <a href="#">Docs</a>
+        <a href="#">API Reference</a>
+        <a href="#">Guides</a>
+      </div>
+      <div class="ft-col">
+        <a href="#">GitHub</a>
+        <a href="#">X / Twitter</a>
+        <a href="#">System Status</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Interactive mouse glow effect
+  const glow = document.getElementById('glow');
+  document.addEventListener('mousemove', (e) => {
+    // Center the glow orb on the cursor
+    const x = e.clientX;
+    const y = e.clientY;
+    glow.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+  });
+</script>
+
+</body>
+</html>

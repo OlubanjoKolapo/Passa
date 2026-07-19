@@ -28,7 +28,7 @@ const PASSA_NAV = [
     { key: 'rails', label: 'Rails', icon: ICONS.rails },
   ]},
   { label: 'Develop', items: [
-    { key: 'webhooks', label: 'Webhooks', href: 'developers.html', icon: ICONS.webhooks },
+    { key: 'webhooks', label: 'Webhooks', href: 'webhooks.html', icon: ICONS.webhooks },
     { key: 'apikeys', label: 'API keys', href: 'developers.html', icon: ICONS.apikeys },
   ]},
 ];
@@ -80,11 +80,14 @@ function bindCopyButtons(root) {
   });
 }
 
-/* Approvals dataset (Past 30 days) */
+/* Approvals dataset (Pending and Past 30 days) */
 const PASSA_APPROVALS = [
-  { id: 'appr_9Lp2mV', time: 'Jul 18, 14:05', details: 'Team offsite lunch at iFood ($23.00)', agent: 'errand-runner' },
-  { id: 'appr_4Nc8wT', time: 'Jul 16, 09:30', details: 'AWS Infrastructure Bill ($1,240.00)', agent: 'devops-bot' },
-  { id: 'appr_7Tq5nW', time: 'Jul 10, 16:45', details: 'Software License Renewal ($85.00)', agent: 'admin-assistant' }
+  { id: 'appr_1Aa2bC', time: '14:38:12', date: 'Jul 19', user: 'usr_8Wb6tYcK', reason: 'Emergency server upgrade limit', merchant: 'AWS', amt: '$3,500.00', agent: 'devops-bot', st: 'pending', expires_in: '14m 59s' },
+  { id: 'appr_2Xx3yZ', time: '14:30:05', date: 'Jul 19', user: 'usr_5Vd3pQzX', reason: 'Last minute travel flight exception', merchant: 'Delta Air Lines', amt: '$850.00', agent: 'travel-bot', st: 'pending', expires_in: '06m 12s' },
+  { id: 'appr_3Mm4nN', time: '12:15:40', date: 'Jul 19', user: 'usr_7Tq5nWjL', reason: 'Client dinner over budget', merchant: 'Fogo de Chao', amt: '$420.00', agent: 'sales-bot', st: 'pending', expires_in: '02m 05s' },
+  { id: 'appr_9Lp2mV', time: '14:05:00', date: 'Jul 18', user: 'usr_4Nc8wTjZ', reason: 'Team offsite lunch at iFood', merchant: 'iFood', amt: '$23.00', agent: 'errand-runner', st: 'completed' },
+  { id: 'appr_4Nc8wT', time: '09:30:11', date: 'Jul 16', user: 'usr_2Fh8kRsN', reason: 'AWS Infrastructure Bill', merchant: 'AWS', amt: '$1,240.00', agent: 'devops-bot', st: 'declined' },
+  { id: 'appr_7Tq5nW', time: '16:45:22', date: 'Jul 10', user: 'usr_9Kp2mVxR', reason: 'Software License Renewal', merchant: 'Figma', amt: '$85.00', agent: 'admin-assistant', st: 'completed' }
 ];
 
 /* Payments dataset (Jul 18, 2026) */

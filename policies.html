@@ -60,10 +60,16 @@
 .sim-arrow { font: 500 16px var(--mono); color: var(--gray-400); }
 .sim-pill {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 5px 12px; border-radius: 6px; border: none;
-  font: 500 13px var(--sans); text-transform: capitalize;
+  font: 400 13px var(--sans); text-transform: capitalize;
+  color: var(--gray-700);
 }
-.sim-pill svg { width: 14px; height: 14px; flex: none; }
+.sim-pill::before {
+  content: ''; display: block; flex: none;
+  width: 6px; height: 6px; border-radius: 50%;
+}
+.sim-pill.awaiting_rail::before { background: #3B82F6; }
+.sim-pill.pending_approval::before { background: #F59E0B; }
+.sim-pill.declined::before { background: #9CA3AF; }
 .sim-reason { font: 400 12px var(--sans); color: var(--gray-500); margin-top: 8px; }
 .sim-trace {
   background: #F4F5F7; border: 1px solid var(--line); border-radius: 8px;
@@ -191,11 +197,7 @@ const rules = { r1: true, r2: true, r3: true, r4: true };
 
 const CATEGORY = { ifood: 'food_delivery', rappi: 'food_delivery', uber: 'transport', amazon: 'retail' };
 const REGION_RAIL = { BR: 'PIX', IN: 'UPI', PH: 'GCASH', US: 'CARD' };
-const VERDICT_STYLE = {
-  awaiting_rail: { bg: 'rgba(37,99,235,.1)', fg: '#1D4ED8', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>` },
-  pending_approval: { bg: 'rgba(245,158,11,.1)', fg: '#B45309', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>` },
-  declined: { bg: 'rgba(100,116,139,.1)', fg: '#475569', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>` },
-};
+
 
 function simulate() {
   const amt = parseFloat(document.getElementById('sim-amount').value) || 0;
@@ -224,11 +226,9 @@ function simulate() {
     if (trig && status === 'awaiting_rail') { status = 'pending_approval'; reason = 'approval_threshold triggered — a push goes to the user before any money moves.'; }
   }
 
-  const style = VERDICT_STYLE[status];
   const pill = document.getElementById('sim-pill');
-  pill.style.background = style.bg;
-  pill.style.color = style.fg;
-  pill.innerHTML = `${style.icon} ${status.replace('_', ' ')}`;
+  pill.className = 'sim-pill ' + status;
+  pill.textContent = status.replace('_', ' ');
   document.getElementById('sim-reason').textContent = reason;
   document.getElementById('sim-trace').innerHTML = trace.map(t => `
     <div class="sim-trace-row">

@@ -9,6 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <style>
+/* Specific approvals styles */
 .filters {
   display: flex; align-items: center; gap: 10px;
   padding: 12px 32px; border-bottom: 1px solid var(--line-soft);
@@ -18,6 +19,7 @@
   font: 500 11px var(--mono); color: var(--gray-700);
   background: #fff; border: 1px solid #D1D5DB; border-radius: 6px;
   padding: 5px 10px; cursor: pointer; font-variant-numeric: tabular-nums;
+  display: inline-flex; align-items: center; gap: 6px;
 }
 .filters input[type="search"] {
   margin-left: auto; width: 260px;
@@ -26,11 +28,17 @@
   padding: 5px 10px; outline: none;
 }
 .filters input[type="search"]:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
-.cols, .row {
-  display: grid;
-  grid-template-columns: minmax(0,1fr) 180px 150px;
-  gap: 12px; padding: 14px 32px;
+
+.section-title {
+  font: 600 14px var(--sans); color: var(--ink);
+  padding: 24px 32px 8px; margin: 0;
 }
+.section-divider {
+  height: 8px; background: #F9FAFB;
+  border-top: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft);
+}
+
+.cols, .row { display: grid; gap: 12px; padding: 14px 32px; }
 .cols {
   padding: 10px 32px; border-bottom: 1px solid var(--line);
   font: 600 9.5px var(--sans); text-transform: uppercase;
@@ -38,10 +46,36 @@
 }
 .row { align-items: center; border-bottom: 1px solid var(--line-soft); cursor: pointer; }
 .row:hover { background: #FAFAFB; }
-.row .c-details { font: 500 13px var(--sans); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.row .c-time { font: 400 12px var(--mono); color: var(--gray-500); font-variant-numeric: tabular-nums; }
-.row .c-agent { font: 500 12px var(--mono); color: var(--blue-dark); background: #EFF6FF; padding: 2px 6px; border-radius: 4px; border: 1px solid #BFDBFE; display: inline-block; justify-self: start; }
+
+.cols.pending, .row.pending { grid-template-columns: 110px 112px minmax(0,1fr) 130px 130px 80px 230px; }
+.cols.history, .row.history { grid-template-columns: 110px 112px minmax(0,1fr) 130px 130px 80px 120px; }
+
+.row .c-time { font: 400 11px var(--mono); color: var(--gray-400); font-variant-numeric: tabular-nums; }
+.row .c-user { font: 500 11.5px var(--mono); color: var(--gray-600); }
+.row .c-reason { font: 400 12.5px var(--sans); color: var(--gray-700); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .c-merchant { font: 500 12.5px var(--sans); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .c-agent { font: 500 11px var(--mono); color: var(--blue-dark); background: #EFF6FF; padding: 2px 6px; border-radius: 4px; border: 1px solid #BFDBFE; display: inline-block; justify-self: start; white-space: nowrap; }
+.row .c-amt { font: 500 12.5px var(--mono); color: var(--ink); text-align: right; font-variant-numeric: tabular-nums; }
+.row .pill { justify-self: start; }
+
 .empty { padding: 48px; text-align: center; font: 400 13px var(--sans); color: var(--gray-400); }
+
+/* Actions & Timer */
+.actions { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+.btn-approve, .btn-decline {
+  font: 500 11px var(--sans); padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: all 0.15s;
+}
+.btn-approve { background: #10B981; color: #fff; border: 1px solid #059669; box-shadow: 0 1px 2px rgba(16,185,129,.2); }
+.btn-approve:hover { background: #059669; }
+.btn-decline { background: #fff; color: var(--gray-700); border: 1px solid #D1D5DB; box-shadow: 0 1px 2px rgba(0,0,0,.02); }
+.btn-decline:hover { background: #F9FAFB; border-color: #9CA3AF; }
+
+.timer { 
+  font: 500 11px var(--mono); color: var(--gray-500); 
+  display: flex; align-items: center; gap: 4px; 
+  margin-right: auto;
+}
+.timer svg { color: #F59E0B; }
 </style>
 </head>
 <body data-nav="approvals">
@@ -50,17 +84,27 @@
 <main class="main">
   <div class="topbar">
     <span class="topbar-title">Approvals</span>
-    <span class="topbar-sub">Past 30 Days</span>
+    <span class="topbar-sub">Pending actions required</span>
   </div>
-  <div class="filters">
+  
+  <h2 class="section-title">Pending Approvals</h2>
+  <div class="cols pending">
+    <span>Time (UTC)</span><span>User</span><span>Reason</span><span>Merchant</span><span>Agent</span><span style="text-align:right">Amount</span><span>Actions</span>
+  </div>
+  <div id="pending-rows"></div>
+
+  <div class="section-divider" style="margin-top: 16px;"></div>
+
+  <div class="filters" style="border-bottom: none; position: static;">
+    <h2 class="section-title" style="padding: 0; flex: 1;">Resolved History</h2>
     <button class="date-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>Jun 18 → Jul 18</button>
-    <input type="search" id="q" placeholder="Search details, agents…">
+    <input type="search" id="q" placeholder="Search user, reason, merchant…">
   </div>
-  <div class="cols">
-    <span>Details</span><span>Date & Time</span><span>Agent</span>
+  <div class="cols history" style="border-top: 1px solid var(--line-soft);">
+    <span>Time (UTC)</span><span>User</span><span>Reason</span><span>Merchant</span><span>Agent</span><span style="text-align:right">Amount</span><span>Status</span>
   </div>
-  <div id="rows"></div>
-  <div class="empty" id="empty" hidden>No approvals match these filters.</div>
+  <div id="resolved-rows"></div>
+  <div class="empty" id="empty" hidden>No history matches these filters.</div>
 </main>
 </div>
 <script src="app.js"></script>
@@ -69,15 +113,38 @@ const state = { q: '' };
 
 function renderRows() {
   const q = state.q.trim().toLowerCase();
-  const rows = PASSA_APPROVALS.filter(a =>
-    (!q || (a.details + ' ' + a.agent).toLowerCase().includes(q))
-  );
-  document.getElementById('empty').hidden = rows.length > 0;
-  document.getElementById('rows').innerHTML = rows.map(a => `
-    <div class="row">
-      <span class="c-details">${a.details}</span>
-      <span class="c-time">${a.time}</span>
+  
+  // Pending rows (not filtered by search for now, to keep them prominent)
+  const pending = PASSA_APPROVALS.filter(a => a.st === 'pending');
+  document.getElementById('pending-rows').innerHTML = pending.map(a => `
+    <div class="row pending">
+      <span class="c-time">${a.date} · ${a.time}</span>
+      <span class="c-user">${a.user}</span>
+      <span class="c-reason" title="${a.reason}">${a.reason}</span>
+      <span class="c-merchant" title="${a.merchant}">${a.merchant}</span>
       <span class="c-agent">${a.agent}</span>
+      <span class="c-amt">${a.amt}</span>
+      <div class="actions">
+        <span class="timer"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${a.expires_in}</span>
+        <button class="btn-decline" onclick="event.stopPropagation()">Decline</button>
+        <button class="btn-approve" onclick="event.stopPropagation()">Approve</button>
+      </div>
+    </div>`).join('');
+
+  // Resolved rows
+  const resolved = PASSA_APPROVALS.filter(a => a.st !== 'pending' && 
+    (!q || (a.user + ' ' + a.reason + ' ' + a.merchant + ' ' + a.agent).toLowerCase().includes(q))
+  );
+  document.getElementById('empty').hidden = resolved.length > 0;
+  document.getElementById('resolved-rows').innerHTML = resolved.map(a => `
+    <div class="row history">
+      <span class="c-time">${a.date} · ${a.time}</span>
+      <span class="c-user">${a.user}</span>
+      <span class="c-reason" title="${a.reason}">${a.reason}</span>
+      <span class="c-merchant" title="${a.merchant}">${a.merchant}</span>
+      <span class="c-agent">${a.agent}</span>
+      <span class="c-amt">${a.amt}</span>
+      ${pillHtml(a.st)}
     </div>`).join('');
 }
 
